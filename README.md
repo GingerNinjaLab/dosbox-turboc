@@ -52,7 +52,10 @@ python .\rg-c-compile.py runonly test test
 ```
 That should open your stadnard DosBox environment as managed by this program. From here you can then start the install process of Turbo C.  
 
-
+To install the Python modules issue the following command:  
+```
+pip install -r requirements.txt   
+```
 
 
 # Running
