@@ -12,7 +12,20 @@
 # Requirements : Python   - Wrapper to automate the compolation tasks
 #                DOSBox   - DOS Machine emulator
 #                Tource C - Borland Turbo C compiler files 
+# Setup        : Run the following command to install the required modules:
+#
+# pip install -r requirements.txt
+#
+# Running      :
+# To run the program here are the command arguments:
 #                
+# rg-c-compiler.py <mode> <source subdirectory> <name of the c file>
+#
+# mode can be  : compileonly     - Compile the C file only
+#                compilerun      - Compile the C file and run it is created
+#                runonly         - Run the DosBox environment only and do not compile
+#
+# For example:
 # rg-c-compiler.py compileonly source test
 #
 
@@ -20,40 +33,56 @@ import sys
 import os
 import subprocess
 import time
-import msvcrt
+import keyboard
+import psutil
 
 #Top level config
-#EmulatorDosPath='C:\\dev\\dosbox-turboc'
+#======================================================================================
 EmulatorDosPath = os.getcwd()
 EmulatorExePath='C:\\Program Files (x86)\\DOSBox-0.74-3\\DOSBox.exe'
 DosBoxConfigFile="dosbox-0.74-3.conf"
 DosBoxConfigTempFilePath=os.path.join(EmulatorDosPath,"rg-c-dosbox.conf")
 ReadyFileTriggerFile="ready.inf"
 WaitTimeout=5
+#======================================================================================
 
 print("RetroGinger - MSDOS - C Compiler")
 print("================================")
 
-
+#Parse arguments
+#======================================================================================
 if (len(sys.argv)!=4):
     print("Requires 3 arguments:")
     print("python .\\rg-c-compile.py <mode> <source> <test>")
     exit()
-
-#Fetch arguments
 Mode=sys.argv[1]
 SourcePath=sys.argv[2]
 SourceFile=sys.argv[3]
 
-if Mode!="compileonly" and Mode!="compilerun":
+if Mode!="compileonly" and Mode!="compilerun" and Mode!="runonly":
     print("Specify mode: compileonly or compulerun")
     exit()
 
 
+
+#Clear down ready for next run
+#======================================================================================
+ClearFilePath=os.path.join(EmulatorDosPath,ReadyFileTriggerFile)
+if os.path.exists(ClearFilePath):
+    os.remove(ClearFilePath)
+ClearFilePath=os.path.join(EmulatorDosPath,SourcePath,f"{SourceFile}.exe")
+if os.path.exists(ClearFilePath):
+    os.remove(ClearFilePath)
+ClearFilePath=os.path.join(EmulatorDosPath,SourcePath,f"{SourceFile}.cmp")
+if os.path.exists(ClearFilePath):
+    os.remove(ClearFilePath)
+ClearFilePath=os.path.join(EmulatorDosPath,"compile.bat")
+if os.path.exists(ClearFilePath):
+    os.remove(ClearFilePath)
+
 #Check DOSBOX config file
+#======================================================================================
 DosBoxConfigFilePath=os.path.join(EmulatorDosPath,DosBoxConfigFile)
-
-
 if os.path.exists(DosBoxConfigFilePath):
     print("Generating DOSBOX config")
 
@@ -75,26 +104,23 @@ else:
     print(f"DOSBOX Config file {DosBoxConfigFilePath} not found")
 
 
-#Clear down ready for next run
-ClearFilePath=os.path.join(EmulatorDosPath,ReadyFileTriggerFile)
-if os.path.exists(ClearFilePath):
-    os.remove(ClearFilePath)
-ClearFilePath=os.path.join(EmulatorDosPath,SourcePath,f"{SourceFile}.exe")
-if os.path.exists(ClearFilePath):
-    os.remove(ClearFilePath)
-ClearFilePath=os.path.join(EmulatorDosPath,SourcePath,f"{SourceFile}.cmp")
-if os.path.exists(ClearFilePath):
-    os.remove(ClearFilePath)
-
-#Launch DOSBox and compiler
-print(f"Launching DOSBox and Compiler")
+#Generate startup files for Dos
+#======================================================================================
 dosStartUp=""
 
 if Mode=="compilerun":
+    print(f"Launching DOSBox and Compiler then run")
     dosStartUp=f"""
 IF EXIST {SourceFile}.exe CLS
 IF EXIST {SourceFile}.exe {SourceFile}.exe
 """
+
+if Mode=="compileonly":
+    print(f"Launching DOSBox and Compiler")
+
+if Mode=="runonly":
+    print(f"Launching DOSBox only")
+
 
 DosTemplateCompileBat=f"""
 @echo off
@@ -107,28 +133,47 @@ echo %STDERR%
 {dosStartUp}
 """
 
+if Mode=="runonly":
+    print(f"Launching DOSBox only")
+    DosTemplateCompileBat=f"""
+@echo off
+echo Run DosBox only
+"""
+
 print(f"Generating compile.bat")
 compilerBatPath = os.path.join(EmulatorDosPath, 'compile.bat')
 fileWriter = open(compilerBatPath, 'w')
 fileWriter.write(DosTemplateCompileBat)
 fileWriter.close()
 
-
-
+#Launch DosBox
+#======================================================================================
+DETACHED_PROCESS = 0x00000008
 if Mode=="compileonly":
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     startupinfo.wShowWindow = 6  # 6 = SW_MINIMIZE
     process = subprocess.Popen([EmulatorExePath,"-conf",DosBoxConfigTempFilePath],startupinfo=startupinfo)
-else:
-    DETACHED_PROCESS = 0x00000008
+
+if Mode=="compilerun":
+    process = subprocess.Popen([EmulatorExePath,"-conf",DosBoxConfigTempFilePath],creationflags=DETACHED_PROCESS,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL)
+
+if Mode=="runonly":
     process = subprocess.Popen([EmulatorExePath,"-conf",DosBoxConfigTempFilePath],creationflags=DETACHED_PROCESS,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL)
 
 print(f"Process PID: {process.pid}")
+
+#Wait for DosBox and compilation to finish
+#======================================================================================
 print(f"Waiting for completion")
 checkLoop=False
+if (Mode=="runonly"):
+    checkLoop=True
+
 wait=1.0
 ReadyFileTriggerPath=os.path.join(EmulatorDosPath, ReadyFileTriggerFile)
 while (checkLoop!=True):
@@ -148,19 +193,31 @@ if Mode=="compileonly":
     process.terminate()
 
 #Get compiler output
+#======================================================================================
 compilerOutputPath = os.path.join(EmulatorDosPath, SourcePath, f"{SourceFile}.cmp")
 if os.path.exists(compilerOutputPath):
     compilerReportFile = open(compilerOutputPath, 'r')
     compilerReport = compilerReportFile.read()
     print(compilerReport)
 
-
-if Mode=="compilerun":
-    print("Waiting for process. q to quit")
+#Wait for keyboard or DosBox termination
+#======================================================================================
+if Mode=="compilerun" or Mode=="runonly":
+    print("Waiting for process. q to quit or close DosBox")
     checkLoop=False
     while(checkLoop!=True):
-        if msvcrt.kbhit():  # Check if a key is pressed
-            key = msvcrt.getch()
-            if key==b'q':
-                process.terminate()
-                checkLoop=True
+
+        #Check for process running
+        foundProcess=False
+        for proc in psutil.process_iter(['name']):
+            if proc.pid==process.pid:
+                foundProcess=True
+        if foundProcess==False:
+            checkLoop=True
+
+        #Check for keypress
+        if keyboard.is_pressed('q'):        
+            process.terminate()
+            checkLoop=True
+
+
