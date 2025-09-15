@@ -1,0 +1,18 @@
+                enable synchronization profiling
+
+Generic object creation:
+-object TYPENAME[,PROP1=VALUE1,...]
+                create a new object of type TYPENAME setting properties
+                in the order they are specified.  Note that the 'id'
+                property must be set.  These objects are placed in the
+                '/objects' path.
+
+During emulation, the following keys are useful:
+ctrl-alt-f      toggle full screen
+ctrl-alt-n      switch to virtual console 'n'
+ctrl-alt-g      toggle mouse and keyboard grab
+
+When using -nographic, press 'ctrl-a h' to get some help.
+
+See <https://qemu.org/contribute/report-a-bug> for how to report bugs.
+More information on the QEMU project at <https://qemu.org>.
