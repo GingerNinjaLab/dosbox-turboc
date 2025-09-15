@@ -2,14 +2,11 @@ DosBox-TurboC
 # Compiling C for old 16-bit MSDOS machines on a modern OS 
 
 Requirements:  
-Python  
-Wrapper to automate the compolation tasks
+* Python  - Wrapper to automate the compolation tasks
 
-DOSBox  
-DOS Machine emulator  
+* DOSBox  - DOS Machine emulator  
 
-Welcome to Turbo C++ Version 3.0
-The 16-bit compiler with attitude!
+* *Turbo C++ Version 3.0 - The 16-bit compiler with attitude!
 
 
 # Setup  
