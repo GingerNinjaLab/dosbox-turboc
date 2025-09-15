@@ -6,13 +6,11 @@ Requirements:
 
 * DOSBox  - DOS Machine emulator  
 
-* *Turbo C++ Version 3.0 - The 16-bit compiler with attitude!
+* Borland Turbo C Version 2.0 - The 16-bit compiler with attitude!
 
 
 # Setup  
 To configure the environment perform the following steps. Install Python and DosBox.  
-Next get hold of a copy of Welcome to Turbo C++ Version 3.0  
-The program will typically be in a series of .img files (like 1.22Mb flopy images for eample.) Using 7zip decompress these files into a seperate directory.  
 
 Locate the default coinfig file for DosBox, Typically located in the path:
 %appdata%\Local\DosBox  
@@ -53,6 +51,22 @@ To install the Python modules issue the following command:
 ```
 pip install -r requirements.txt   
 ```
+
+Next get hold of a copy of Borland Turbo C Version 2.0  
+The program will typically be in a series of .img files (like 1.22Mb flopy images for eample.) Using 7zip decompress these files into a seperate directory.  
+
+Make a temp folder called tcsetup.  
+Unzip 7z file to temp folder
+That should have something like:  
+* disk01.img  
+* disk02.img  
+* disk03.img  
+
+Using 7Zip on each file and extract here for each img file.
+That should result in a temp folder with all the setup files.  
+
+Run the DosBox emulator and cd into the tcsetup folder.  
+You can then install the program into the c:\TC folder.  
 
 
 # Running
