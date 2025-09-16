@@ -1,5 +1,10 @@
 {
     "markdown.styles": [
         "https://socialsimulation.net/css/post.min.css"
-    ]
+    ],
+    "files.associations": {
+        "cstdio": "cpp",
+        "dos.h": "c",
+        "stdio.h": "c"
+    }
 }

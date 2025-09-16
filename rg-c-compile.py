@@ -52,13 +52,14 @@ print("================================")
 
 #Parse arguments
 #======================================================================================
-if (len(sys.argv)!=4):
+if (len(sys.argv)<4):
     print("Requires 3 arguments:")
     print("python .\\rg-c-compile.py <mode> <source> <test>")
     exit()
 Mode=sys.argv[1]
 SourcePath=sys.argv[2]
 SourceFile=sys.argv[3]
+SourceFile = SourceFile.replace(".c","")
 
 if Mode!="compileonly" and Mode!="compilerun" and Mode!="runonly":
     print("Specify mode: compileonly or compulerun")
@@ -123,12 +124,15 @@ if Mode=="compileonly":
 if Mode=="runonly":
     print(f"Launching DOSBox only")
 
+CompileFileString=""
+for i in range(3,len(sys.argv)):
+    CompileFileString+=f" {sys.argv[i]}"
 
 DosTemplateCompileBat=f"""
 @echo off
 echo Compiling file {SourceFile}.c
 cd {SourcePath}
-tcc {SourceFile}.c > {SourceFile}.cmp
+tcc {CompileFileString} > {SourceFile}.cmp
 type {SourceFile}.cmp
 echo Done > d:\\{ReadyFileTriggerFile}
 echo %STDERR%
@@ -218,7 +222,7 @@ if Mode=="compilerun" or Mode=="runonly":
             checkLoop=True
 
         #Check for keypress
-        if keyboard.is_pressed('q'):        
+        if keyboard.is_pressed('q'):   
             process.terminate()
             checkLoop=True
 
