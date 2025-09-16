@@ -1,10 +1,7 @@
 TC/
-source/GO.EXE
-source/GO.CMP
-source/GO.OBJ
+source/TEST.OBJ
 source/TEST.CMP
 source/TEST.EXE
-source/TEST.OBJ
 READY.INF
 rg-c-dosbox.conf
 TCSETUP/
