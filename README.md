@@ -8,6 +8,30 @@ Requirements:
 
 * Borland Turbo C Version 2.0 - The 16-bit compiler with attitude!
 
+# Overview
+You do all your lovely C stuff in your prefered code editor on your modern OS. When you want to compile you run a Python script that performs the following operations:  
+
+* Parse arguments
+* Clear down ready for next run
+* Check DOSBOX config file
+* Generate startup files for Dos
+* Launch DosBox
+* Wait for DosBox and compilation to finish
+* Get compiler output
+* Wait for keyboard or DosBox termination
+
+When DosBox runs it has the following local drives mounted:  
+
+
+| DOSBox Drive | Example Host path | Purpose                                 |
+|--------------|-------------------|-----------------------------------------|
+| C:           | c:\emulator\dosboxtc | Path that contains the Turbo C files |
+| D:           | d:\dev\yourcode      | Path to your source code             |
+| Z:           | -                    | The default DosBox startup drive     |
+
+
+
+
 
 # Setup  
 To configure the environment perform the following steps. Install Python and DosBox.  
@@ -43,7 +67,7 @@ That will allow the program to automate each launch of DosBox.
 You should then be able to launch DosBox using the following command:  
 
 ```
-python .\rg-c-compile.py runonly test test    
+python .\rg-c-compile.py runonly source test.c utils.c    
 ```
 That should open your stadnard DosBox environment as managed by this program. From here you can then start the install process of Turbo C.  
 
@@ -74,8 +98,21 @@ You can then install the program into the c:\TC folder.
 To run the program here are the command arguments:
 
 ```                
- python .\rg-c-compiler.py <mode> <source subdirectory> <name of the c file>
+ python .\rg-c-compiler.py <mode> <source subdirectory> <file1.c> <file2.c> <file3.c>...
 ```
+In fact the <file?.c> entries are what is added to the TCC command in dos.  
+So in the example earlier the command:  
+
+```
+python .\rg-c-compile.py runonly source test.c utils.c    
+```
+Compiles the TCC command in DOS to:  
+
+```
+tcc  test.c utils.c > test.cmp 
+```
+
+The test.cmp are the complication results to be retrived by the Python script.  
 
 mode can be:
 * compileonly     - Compile the C file only
@@ -84,6 +121,9 @@ mode can be:
 
 For example:  
 ```
- python .\rg-c-compiler.py compileonly source test
+ python .\rg-c-compiler.py compileonly source test1.c
 ```
+
+Would compile the file test1.c but not run it. The DosBox applicaiton is terminated, effectivly only acting as a compiler and not running the resulting program.
+
 
