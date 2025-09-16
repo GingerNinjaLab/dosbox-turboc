@@ -26,14 +26,10 @@ int main()
 {
         clrscr();
         printf("DOS System test\r\n");
-
         printf("Write char to screen x/y\r\n");
 
         gotoxy(30, 2);
         printf("ABCDWTEYHDFHERYWERTWEFASDF");
-
-       // gotoxy(30, 2);
-        //ch=cpeekc();
 
         gettext(33, 2, 34, 2, buffer);
 
@@ -45,16 +41,18 @@ int main()
         delay(500);
         nosound();
 
-        
         printf("Press any key\r\n");
         k = getch();    
 
-/*
-        printf("Loading file");
+
+        printf("Loading file\r\n");
         loadFile();
-        printf("Complete");
+        printf("Complete\r\n");
+        printf("Press any key\r\n");
         k = getch();
-        */    
+    
+        clrscr();
+
         return 0;
 }
 

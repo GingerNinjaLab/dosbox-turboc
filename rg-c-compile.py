@@ -38,10 +38,11 @@ import psutil
 
 #Top level config
 #======================================================================================
-EmulatorDosPath = os.getcwd()
+EmulatorDosDataPath = os.getcwd()
+EmulatorDosTCPath = "C:\\Emulators\\DosTc"
 EmulatorExePath='C:\\Program Files (x86)\\DOSBox-0.74-3\\DOSBox.exe'
 DosBoxConfigFile="dosbox-0.74-3.conf"
-DosBoxConfigTempFilePath=os.path.join(EmulatorDosPath,"rg-c-dosbox.conf")
+DosBoxConfigTempFilePath=os.path.join(EmulatorDosDataPath,"rg-c-dosbox.conf")
 ReadyFileTriggerFile="ready.inf"
 WaitTimeout=5
 #======================================================================================
@@ -67,29 +68,30 @@ if Mode!="compileonly" and Mode!="compilerun" and Mode!="runonly":
 
 #Clear down ready for next run
 #======================================================================================
-ClearFilePath=os.path.join(EmulatorDosPath,ReadyFileTriggerFile)
+ClearFilePath=os.path.join(EmulatorDosDataPath,ReadyFileTriggerFile)
 if os.path.exists(ClearFilePath):
     os.remove(ClearFilePath)
-ClearFilePath=os.path.join(EmulatorDosPath,SourcePath,f"{SourceFile}.exe")
+ClearFilePath=os.path.join(EmulatorDosDataPath,SourcePath,f"{SourceFile}.exe")
 if os.path.exists(ClearFilePath):
     os.remove(ClearFilePath)
-ClearFilePath=os.path.join(EmulatorDosPath,SourcePath,f"{SourceFile}.cmp")
+ClearFilePath=os.path.join(EmulatorDosDataPath,SourcePath,f"{SourceFile}.cmp")
 if os.path.exists(ClearFilePath):
     os.remove(ClearFilePath)
-ClearFilePath=os.path.join(EmulatorDosPath,"compile.bat")
+ClearFilePath=os.path.join(EmulatorDosDataPath,"compile.bat")
 if os.path.exists(ClearFilePath):
     os.remove(ClearFilePath)
 
 #Check DOSBOX config file
 #======================================================================================
-DosBoxConfigFilePath=os.path.join(EmulatorDosPath,DosBoxConfigFile)
+DosBoxConfigFilePath=os.path.join(EmulatorDosDataPath,DosBoxConfigFile)
 if os.path.exists(DosBoxConfigFilePath):
     print("Generating DOSBOX config")
 
     DosBoxConfigCommands=f"""
-    mount c {EmulatorDosPath}
-    SET PATH=%PATH%;c:\\tc\\bin
-    c:
+    mount c {EmulatorDosTCPath}
+    mount d {EmulatorDosDataPath}
+    SET PATH=%PATH%;c:\\tc
+    d:
     compile.bat
     """
     DosBoxConfigFileReader = open(DosBoxConfigFilePath, 'r')
@@ -128,7 +130,7 @@ echo Compiling file {SourceFile}.c
 cd {SourcePath}
 tcc {SourceFile}.c > {SourceFile}.cmp
 type {SourceFile}.cmp
-echo Done > c:\\{ReadyFileTriggerFile}
+echo Done > d:\\{ReadyFileTriggerFile}
 echo %STDERR%
 {dosStartUp}
 """
@@ -141,7 +143,7 @@ echo Run DosBox only
 """
 
 print(f"Generating compile.bat")
-compilerBatPath = os.path.join(EmulatorDosPath, 'compile.bat')
+compilerBatPath = os.path.join(EmulatorDosDataPath, 'compile.bat')
 fileWriter = open(compilerBatPath, 'w')
 fileWriter.write(DosTemplateCompileBat)
 fileWriter.close()
@@ -175,7 +177,7 @@ if (Mode=="runonly"):
     checkLoop=True
 
 wait=1.0
-ReadyFileTriggerPath=os.path.join(EmulatorDosPath, ReadyFileTriggerFile)
+ReadyFileTriggerPath=os.path.join(EmulatorDosDataPath, ReadyFileTriggerFile)
 while (checkLoop!=True):
     if os.path.exists(ReadyFileTriggerPath):
         checkLoop=True
@@ -194,7 +196,7 @@ if Mode=="compileonly":
 
 #Get compiler output
 #======================================================================================
-compilerOutputPath = os.path.join(EmulatorDosPath, SourcePath, f"{SourceFile}.cmp")
+compilerOutputPath = os.path.join(EmulatorDosDataPath, SourcePath, f"{SourceFile}.cmp")
 if os.path.exists(compilerOutputPath):
     compilerReportFile = open(compilerOutputPath, 'r')
     compilerReport = compilerReportFile.read()
