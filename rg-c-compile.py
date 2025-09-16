@@ -19,14 +19,13 @@
 # Running      :
 # To run the program here are the command arguments:
 #                
-# rg-c-compiler.py <mode> <source subdirectory> <name of the c file>
-#
+# rg-c-compiler.py <mode> <source subdirectory> <file1.c> <file2.c> <file3.c>...
 # mode can be  : compileonly     - Compile the C file only
 #                compilerun      - Compile the C file and run it is created
 #                runonly         - Run the DosBox environment only and do not compile
 #
 # For example:
-# rg-c-compiler.py compileonly source test
+# rg-c-compiler.py compileonly source test.c
 #
 
 import sys
@@ -54,7 +53,7 @@ print("================================")
 #======================================================================================
 if (len(sys.argv)<4):
     print("Requires 3 arguments:")
-    print("python .\\rg-c-compile.py <mode> <source> <test>")
+    print("python .\\rg-c-compile.py <mode> <source> <file1.c> <file2.c> <file3.c>...")
     exit()
 Mode=sys.argv[1]
 SourcePath=sys.argv[2]
@@ -78,7 +77,7 @@ if os.path.exists(ClearFilePath):
 ClearFilePath=os.path.join(EmulatorDosDataPath,SourcePath,f"{SourceFile}.cmp")
 if os.path.exists(ClearFilePath):
     os.remove(ClearFilePath)
-ClearFilePath=os.path.join(EmulatorDosDataPath,"compile.bat")
+ClearFilePath=os.path.join(EmulatorDosDataPath,"COMPILE.BAT")
 if os.path.exists(ClearFilePath):
     os.remove(ClearFilePath)
 
@@ -92,8 +91,8 @@ if os.path.exists(DosBoxConfigFilePath):
     mount c {EmulatorDosTCPath}
     mount d {EmulatorDosDataPath}
     SET PATH=%PATH%;c:\\tc
-    d:
-    compile.bat
+    D:
+    COMPILE.BAT
     """
     DosBoxConfigFileReader = open(DosBoxConfigFilePath, 'r')
     DosBoxConfigFileData = DosBoxConfigFileReader.read()
