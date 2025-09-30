@@ -1,0 +1,9 @@
+TC/
+source/TEST.OBJ
+source/TEST.CMP
+source/TEST.EXE
+source/UTILS.OBJ
+READY.INF
+rg-c-dosbox.conf
+TCSETUP/
+compile.bat
