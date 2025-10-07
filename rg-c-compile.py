@@ -60,6 +60,10 @@ Mode=sys.argv[1]
 SourcePath=sys.argv[2]
 SourceFile=sys.argv[3]
 SourceFile = SourceFile.replace(".c","")
+UseMakeFile=False
+if (len(sys.argv)>4):
+    if sys.argv[4].lower()=="make":
+        UseMakeFile=True
 
 if Mode!="compileonly" and Mode!="compilerun" and Mode!="runonly":
     print("Specify mode: compileonly or compulerun")
@@ -139,6 +143,18 @@ echo %STDERR%
 {dosStartUp}
 """
 
+if UseMakeFile==True:
+    DosTemplateCompileBat=f"""
+@echo off
+echo Compiling file {SourceFile}.c
+cd {SourcePath}
+make > {SourceFile}.cmp
+type {SourceFile}.cmp
+echo Done > d:\\{ReadyFileTriggerFile}
+echo %STDERR%
+{dosStartUp}
+"""
+
 if Mode=="runonly":
     print(f"Launching DOSBox only")
     DosTemplateCompileBat=f"""
@@ -209,7 +225,7 @@ if os.path.exists(compilerOutputPath):
 #Wait for keyboard or DosBox termination
 #======================================================================================
 if Mode=="compilerun" or Mode=="runonly":
-    print("Waiting for process. q to quit or close DosBox")
+    print("Waiting for process. ctrl-alt-q to quit or close DosBox")
     checkLoop=False
     while(checkLoop!=True):
 
@@ -222,7 +238,7 @@ if Mode=="compilerun" or Mode=="runonly":
             checkLoop=True
 
         #Check for keypress
-        if keyboard.is_pressed('q'):   
+        if keyboard.is_pressed('q') and keyboard.is_pressed('alt') and keyboard.is_pressed('ctrl'):   
             process.terminate()
             checkLoop=True
 
