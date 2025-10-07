@@ -143,4 +143,23 @@ For example:
 
 Would compile the file test1.c but not run it. The DosBox applicaiton is terminated, effectivly only acting as a compiler and not running the resulting program.
 
+# MakeFile
+The Python program also supports MakeFiles.  
+Here is the syntax for that:  
+
+```
+python .\rg-c-compile.py compilerun source test.c make    
+```
+
+That will trigger the script to go into the source directory, using the name test.c as the main file (but this is overridden by the Makefile) then run a make.exe command. That will look for a file called makefile in the source path and attempt to compile your program.  
+
+Here is an example makefile included in this repo:
+
+```
+#Make file for Turbo C Compiler
+test.exe: test.c utils.c
+	tcc -D__MSDOS__ test.c utils.c
+```
+
+Essentially doing the same thing as before from the command line.
 
